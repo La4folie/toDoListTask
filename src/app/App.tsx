@@ -16,6 +16,7 @@ import { ErrorSnackbar } from "common/components";
 import { TodolistsList } from "../features/todolistsList/TodolistsList";
 import { selectStatus } from "./appSlice";
 import { darkTheme, lightTheme } from "./themes";
+import NotFound from "common/error/NotFound";
 
 function App() {
   const status = useSelector(selectStatus);
@@ -47,7 +48,7 @@ function App() {
           <Container fixed>
             <Routes>
               <Route path={"/"} element={<TodolistsList />} />
-              <Route path={"/*"} element={<div>404</div>} />
+              <Route path={"/*"} element={<NotFound/>} />
             </Routes>
           </Container>
         </div>
