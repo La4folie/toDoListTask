@@ -3,10 +3,9 @@ import { appActions } from "app/appSlice"
 import { AppDispatch } from "app/store"
 
 /**
- * Обрабатывает ошибки сети, возникающие при отправке запросов на сервер
- * @param {unknown} err - Ошибка, которая произошла при отправке запроса на сервер
- * @param {AppDispatch} dispatch - Функция dispatch из библиотеки Redux для отправки actions
- * @returns {void} - Данная функция ничего не возвращает
+ * @param {unknown} err
+ * @param {AppDispatch} dispatch 
+ * @returns {void}
  */
 export const handleServerNetworkError = (err: unknown, dispatch: AppDispatch): void => {
   let errorMessage = "Some error occurred"
