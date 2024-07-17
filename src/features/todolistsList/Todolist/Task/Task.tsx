@@ -4,22 +4,12 @@ import { Delete } from "@mui/icons-material";
 import { EditableSpan } from "common/components";
 import { TaskType } from "../../todolistsApi";
 import { TaskPriorities } from "common/enums";
+import { tasksThunks } from "features/todolistsList/tasksSlice";
+import { useAppDispatch } from "common/hooks";
 
 type TaskPropsType = {
   task: TaskType;
   todolistId: string;
-  changeTaskStatus: (id: string, status: boolean, todolistId: string) => void;
-  changeTaskTitle: (
-    taskId: string,
-    newTitle: string,
-    todolistId: string,
-  ) => void;
-  removeTask: (taskId: string, todolistId: string) => void;
-  changeTaskPriorities: (
-    taskId: string,
-    priority: TaskPriorities,
-    todolistId: string,
-  ) => void;
 };
 
 const circleButtonStyles = {
@@ -44,30 +34,57 @@ const priorityStyles = {
 };
 
 export const Task = React.memo((props: TaskPropsType) => {
+  const dispatch = useAppDispatch();
+
   const onClickHandler = useCallback(
-    () => props.removeTask(props.task.id, props.todolistId),
-    [props],
+    () =>
+      dispatch(
+        tasksThunks.removeTask({
+          taskId: props.task.id,
+          todolistId: props.todolistId,
+        }),
+      ),
+    [dispatch, props.task.id, props.todolistId],
   );
 
   const onChangeHandler = useCallback(
     (e: ChangeEvent<HTMLInputElement>) => {
       let newIsDoneValue = e.currentTarget.checked;
-      props.changeTaskStatus(props.task.id, newIsDoneValue, props.todolistId);
+      dispatch(
+        tasksThunks.updateTask({
+          taskId: props.task.id,
+          domainModel: { status: newIsDoneValue },
+          todolistId: props.todolistId,
+        }),
+      );
     },
-    [props],
+    [dispatch, props.task.id, props.todolistId],
   );
 
   const onTitleChangeHandler = useCallback(
     (newValue: string) => {
-      props.changeTaskTitle(props.task.id, newValue, props.todolistId);
+      dispatch(
+        tasksThunks.updateTask({
+          taskId: props.task.id,
+          domainModel: { title: newValue },
+          todolistId: props.todolistId,
+        }),
+      );
     },
-    [props],
+    [dispatch, props.task.id, props.todolistId],
   );
+
   const onPriorityChangeHandler = useCallback(
     (priority: TaskPriorities) => {
-      props.changeTaskPriorities(props.task.id, priority, props.todolistId);
+      dispatch(
+        tasksThunks.updateTask({
+          taskId: props.task.id,
+          domainModel: { priority },
+          todolistId: props.todolistId,
+        }),
+      );
     },
-    [props],
+    [dispatch, props.task.id, props.todolistId],
   );
 
   return (

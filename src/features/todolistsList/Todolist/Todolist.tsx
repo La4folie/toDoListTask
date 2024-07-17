@@ -5,29 +5,16 @@ import { useAppDispatch } from "common/hooks";
 import React, { useCallback, useEffect } from "react";
 import { tasksThunks } from "../tasksSlice";
 import { TaskStatuses, TaskType } from "../todolistsApi";
-import { FilterValuesType, TodolistDomainType } from "../todolistsSlice";
+import {
+  TodolistDomainType,
+  todolistsActions,
+  todolistsThunks,
+} from "../todolistsSlice";
 import { Task } from "./Task/Task";
-import { TaskPriorities } from "common/enums";
 
 type PropsType = {
   todolist: TodolistDomainType;
   tasks: TaskType[];
-  changeFilter: (value: FilterValuesType, todolistId: string) => void;
-  addTask: (title: string, todolistId: string) => void;
-  changeTaskStatus: (id: string, status: boolean, todolistId: string) => void;
-  changeTaskTitle: (
-    taskId: string,
-    newTitle: string,
-    todolistId: string,
-  ) => void;
-  removeTask: (taskId: string, todolistId: string) => void;
-  removeTodolist: (id: string) => void;
-  changeTodolistTitle: (id: string, newTitle: string) => void;
-  changeTaskPriorities: (
-    taskId: string,
-    priority: TaskPriorities,
-    todolistId: string,
-  ) => void;
 };
 
 export const Todolist = React.memo(function (props: PropsType) {
@@ -39,33 +26,52 @@ export const Todolist = React.memo(function (props: PropsType) {
 
   const addTask = useCallback(
     (title: string) => {
-      props.addTask(title, props.todolist.id);
+      dispatch(tasksThunks.addTask({ title, todolistId: props.todolist.id }));
     },
-    [props],
+    [dispatch, props.todolist.id],
   );
 
-  const removeTodolist = () => {
-    props.removeTodolist(props.todolist.id);
-  };
+  const removeTodolist = () =>
+    dispatch(todolistsThunks.removeTodolist(props.todolist.id));
 
   const changeTodolistTitle = useCallback(
     (title: string) => {
-      props.changeTodolistTitle(props.todolist.id, title);
+      dispatch(
+        todolistsThunks.changeTodolistTitle({ id: props.todolist.id, title }),
+      );
     },
-    [props],
+    [dispatch, props.todolist.id],
   );
 
   const onAllClickHandler = useCallback(
-    () => props.changeFilter("all", props.todolist.id),
-    [props],
+    () =>
+      dispatch(
+        todolistsActions.changeTodolistFilter({
+          id: props.todolist.id,
+          filter: "all",
+        }),
+      ),
+    [dispatch, props.todolist.id],
   );
   const onActiveClickHandler = useCallback(
-    () => props.changeFilter("active", props.todolist.id),
-    [props],
+    () =>
+      dispatch(
+        todolistsActions.changeTodolistFilter({
+          id: props.todolist.id,
+          filter: "active",
+        }),
+      ),
+    [dispatch, props.todolist.id],
   );
   const onCompletedClickHandler = useCallback(
-    () => props.changeFilter("completed", props.todolist.id),
-    [props],
+    () =>
+      dispatch(
+        todolistsActions.changeTodolistFilter({
+          id: props.todolist.id,
+          filter: "completed",
+        }),
+      ),
+    [dispatch, props.todolist.id],
   );
 
   const tasksForTodolist = React.useMemo(() => {
@@ -104,15 +110,7 @@ export const Todolist = React.memo(function (props: PropsType) {
       />
       <div style={{ paddingTop: "15px" }}>
         {sortedTasksByPriority?.map((t) => (
-          <Task
-            key={t.id}
-            task={t}
-            todolistId={props.todolist.id}
-            removeTask={props.removeTask}
-            changeTaskTitle={props.changeTaskTitle}
-            changeTaskStatus={props.changeTaskStatus}
-            changeTaskPriorities={props.changeTaskPriorities}
-          />
+          <Task key={t.id} task={t} todolistId={props.todolist.id} />
         ))}
       </div>
       <div style={{ paddingTop: "10px" }}>
